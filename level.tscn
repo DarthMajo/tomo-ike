@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://6qpp5t0y7jl3"]
+
+[ext_resource type="Script" uid="uid://d0au8xrnenaji" path="res://src/level_generation/Map.cs" id="1_u52ul"]
+
+[node name="Level" type="Node2D"]
+
+[node name="Map" type="Node2D" parent="."]
+script = ExtResource("1_u52ul")

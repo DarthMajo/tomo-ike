@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://crbmexdj6ynw6"]
+
+[ext_resource type="Texture2D" uid="uid://b0ofxe0r2ea4y" path="res://textures/map/floor.png" id="1_7m4dx"]
+
+[node name="Sprite2D" type="Sprite2D"]
+texture = ExtResource("1_7m4dx")
+centered = false
