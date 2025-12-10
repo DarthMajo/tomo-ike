@@ -91,6 +91,20 @@ public class Map
         targetTile.Value = updatedTile.Value;
     }
 
+    public override string ToString()
+    {
+        string str = "";
+        for(int y = 0; y < mapSizeY; y++)
+        {
+            string l = "";
+            for(int x = 0; x < mapSizeX; x++)
+                l += ((int)map[y,x].Value).ToString();
+            l += "\n";
+            str += l;
+        }
+        return str;
+    }
+
     // Private Functions
     private Tile[,] InitMap()
     {

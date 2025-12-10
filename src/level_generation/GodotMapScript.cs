@@ -6,7 +6,22 @@ public partial class GodotMapScript : Node2D
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
     {
-        
+        MapGenerator mg = new MapGenerator(25, 25, 0.75);
+		mg.Generate(42);
+		Map m = mg.GeneratedMap;
+		// Console.WriteLine(mg.GeneratedMap.ToString());
+
+		TileMapLayer tm = (TileMapLayer)GetNode("/root/Level/Map/TileMapLayer");
+
+
+		for(int x = 0; x < m.MapSizeX; x++)
+        {
+            for(int y = 0; y < m.MapSizeY; y++)
+            {
+                int tileVal = (int)m.GetTile(x, y).Value;
+				tm.SetCell(new Vector2I(x,y), tileVal, atlasCoords: new Vector2I(0,0));
+            }
+        }
     }
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
