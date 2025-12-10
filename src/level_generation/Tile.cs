@@ -1,24 +1,24 @@
 public class Tile
 {
     // Variables
-    private uint locX;
-    private uint locY;
-    private uint val;
+    private int locX;
+    private int locY;
+    private TomoIke.TileType val;
 
     // Properties
-    public uint LocationX
+    public int LocationX
     {
         get { return locX; }
         set { locX = value; }
     }
 
-    public uint LocationY
+    public int LocationY
     {
         get { return locY; }
         set { locY = value; }
     }
 
-    public uint Value
+    public TomoIke.TileType Value
     {
         get { return val; }
         set { val = value;}
