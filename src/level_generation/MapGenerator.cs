@@ -54,6 +54,7 @@ public class MapGenerator
     {
         // Generate a map via a seed
         rand = new Random(seed);
+        rg.RandomProperty = rand;
 
         // Place initial room
         PlaceInitialRoom();
