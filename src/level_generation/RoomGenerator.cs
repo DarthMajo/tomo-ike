@@ -1,5 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Runtime.InteropServices;
 using TomoIke;
 
 public class RoomGenerator
@@ -85,8 +88,145 @@ public class RoomGenerator
         // If that that does not work, we will randomly displace the room until all options are gone
         // If we are out of options, reduce the size of the room in non-depth direction
         List<int> originalEntrances;
-        //if(direction == Direction.North || direction == Direction.South)
-            
+        if(direction == Direction.North || direction == Direction.South)
+            originalEntrances = Enumerable.Range(1, roomSizeX - 1).ToList();
+        else
+            originalEntrances = Enumerable.Range(1, roomSizeY - 1).ToList();
+        
+        List<int> entrances = new List<int>(originalEntrances);
+        Console.WriteLine(originalEntrances);
+        bool roomLayoutNotChosen = true;
+        while(roomLayoutNotChosen && entrances.Count > 0)
+        {
+            // Choose a random entrance
+            int entrance = entrances[rand.Next(0, entrances.Count - 1)];
+
+            // Calculate the initial corner
+            int posX = -1;
+            int posY = -1;
+            switch(direction)
+            {
+                case Direction.North:
+                    posX = target.LocationX - entrance;
+                    posY = door.LocationY - roomSizeY - 1;
+                    break;
+                case Direction.South:
+                    posX = target.LocationX - entrance;
+                    posY = door.LocationY;
+                    break;
+                case Direction.East:
+                    posX = door.LocationX;
+                    posY = target.LocationY - entrance;
+                    break;
+                default:
+                    posX = door.LocationX - roomSizeX - 1;
+                    posY = target.LocationY - entrance;
+                    break;
+            }
+
+            // If we get in here, the room is placable!
+            if(IsEmptyPlot(m, posX, posY, roomSizeX, roomSizeY))
+            {
+                roomLayoutNotChosen = false;
+
+                // Place the walls and floor of the room
+                for(int x = posX; x < posX + roomSizeX; x++)
+                {
+                    for(int y = posY; y < posY + roomSizeY; y++)
+                    {
+                        if(ShouldBeWallTile(posX, posY, roomSizeX, roomSizeY, x, y))
+                            m.SetTile(x, y, TileType.WALL);
+                        else
+                            m.SetTile(x, y, TileType.FLOOR);
+                    }
+                }
+
+                // Finally, plop the door
+                m.SetTile(door.LocationX, door.LocationY, TileType.DOOR);
+            }
+
+            // If this entrance failed, remove and try again
+            entrances.Remove(entrance);
+
+            // Check if we have ran out of rooms; if so, we cannot place a room here
+            if(entrances.Count <= 0)
+            {
+                if(direction == Direction.North || direction == Direction.South)
+                    roomSizeX -= 1;
+                else
+                    roomSizeY -= 1;
+
+                if(roomSizeX < minimumRoomSize)
+                    break;
+                if(roomSizeY < minimumRoomSize)
+                    break;
+
+                if(direction == Direction.North || direction == Direction.South)
+                    originalEntrances = Enumerable.Range(1, roomSizeX - 1).ToList();
+                else
+                    originalEntrances = Enumerable.Range(1, roomSizeY - 1).ToList();
+
+                entrances = new List<int>(originalEntrances);
+            }
+        }
+    }
+
+    public Dictionary<string, Tile> ChooseValidDoorTile(Map m)
+    {
+        // Start off with a blank template
+        Dictionary<string, Tile> doorTileInfo = new Dictionary<string, Tile>
+        {
+            { "door", null },
+            { "target", null }
+        };
+
+        // Get all wall tiles as a list
+        List<Tile> wallTiles = m.GetAllTilesOfValue(TileType.WALL);
+
+        // Valid door tiles need a floor on one side and a blank spot on the other side.
+        // We will choose a wall tile at random and see if this is valid.
+        // We will go until the list is exhausted.
+        while(wallTiles.Count > 0)
+        {
+            Tile wall = wallTiles[rand.Next(0, wallTiles.Count - 1)];
+
+            // First, find where the floor tile is
+            Tile target;
+
+            if(m.GetTile(wall.LocationX - 1, wall.LocationY).Value == TileType.FLOOR)
+                target = m.GetTile(wall.LocationX + 1, wall.LocationY);
+            else if(m.GetTile(wall.LocationX + 1, wall.LocationY).Value == TileType.FLOOR)
+                target = m.GetTile(wall.LocationX - 1, wall.LocationY);
+            else if(m.GetTile(wall.LocationX, wall.LocationY - 1).Value == TileType.FLOOR)
+                target = m.GetTile(wall.LocationX, wall.LocationY + 1);
+            else if(m.GetTile(wall.LocationX, wall.LocationY + 1).Value == TileType.FLOOR)
+                target = m.GetTile(wall.LocationX, wall.LocationY - 1);
+            else
+            {
+                wallTiles.Remove(wall);
+                continue;
+            }
+
+            // Check the opposite tile
+            if(target.Value != TileType.BLANK)
+            {
+                wallTiles.Remove(wall);
+                continue;
+            }
+
+            // Check if a 3x3 room can be built here
+            if(m.IsPerimeterTile(target.LocationX, target.LocationY))
+            {
+                wallTiles.Remove(wall);
+                continue;
+            }
+
+            // If we made it here, this should(TM) be a valid door tile!
+            doorTileInfo["door"] = wall;
+            doorTileInfo["target"] = target;
+            break;
+        }
+        return doorTileInfo;
     }
 
     // Private Functions
@@ -103,7 +243,7 @@ public class RoomGenerator
             )
                 return i + 1;
         }
-        return 0;
+        return maximumRoomSize;
 
         (int, int) GetDisplacer(int i, TomoIke.Direction dir)
         {
@@ -120,71 +260,6 @@ public class RoomGenerator
             }
             return (0, 0);
         }
-    }
-
-    private (Tile, Tile) ChooseValidDoorTile(Map m)
-    {
-        // Get all wall tiles as a list
-        List<Tile> wallTiles = m.GetAllTilesOfValue(TomoIke.TileType.WALL);
-
-        // Valid door tiles need a floor on one side and a blank spot on the
-        // other side.
-        // We will choose a wall tile at random and see if this is valid.
-        // We will go until the list is exhausted.
-        while(wallTiles.Count > 0)
-        {
-            int randomWallIndex = rand.Next(0, wallTiles.Count - 1);
-            Tile wall = wallTiles[randomWallIndex];
-
-            // First, find where the floor tile is
-            // TODO: Could be a function :)
-            Tile floor;
-            Tile target;
-            if(m.GetTile(wall.LocationX - 1, wall.LocationY).Value == TomoIke.TileType.FLOOR)
-            {
-                floor = m.GetTile(wall.LocationX - 1, wall.LocationY);
-                target = m.GetTile(wall.LocationX + 1, wall.LocationY);
-            }
-            else if(m.GetTile(wall.LocationX + 1, wall.LocationY).Value == TomoIke.TileType.FLOOR)
-            {
-                floor = m.GetTile(wall.LocationX + 1, wall.LocationY);
-                target = m.GetTile(wall.LocationX - 1, wall.LocationY);
-            }
-            else if(m.GetTile(wall.LocationX, wall.LocationY - 1).Value == TomoIke.TileType.FLOOR)
-            {
-                floor = m.GetTile(wall.LocationX, wall.LocationY - 1);
-                target = m.GetTile(wall.LocationX, wall.LocationY + 1);
-            }
-            else if(m.GetTile(wall.LocationX, wall.LocationY + 1).Value == TomoIke.TileType.FLOOR)
-            {
-                floor = m.GetTile(wall.LocationX, wall.LocationY + 1);
-                target = m.GetTile(wall.LocationX, wall.LocationY - 1);
-            }
-            else
-            {
-                // This is a corner piece
-                wallTiles.Remove(wall);
-                continue;
-            }
-
-            // Check the opposite tile
-            if(m.GetTile(target.LocationX, target.LocationY).Value != TomoIke.TileType.BLANK)
-            {
-                wallTiles.Remove(wall);
-                continue;
-            }
-
-            // Check if a 3x3 room can be built here
-            if(m.IsPerimeterTile(target.LocationX, target.LocationY))
-            {
-                wallTiles.Remove(wall);
-                continue;
-            }
-
-            // If we made it here, this is a valid door tile!
-            return (wall, target);
-        }
-        return (null, null);
     }
 
     private TomoIke.Direction FindDepthDirection(Tile door, Tile target)

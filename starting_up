@@ -1,3 +1,8 @@
 You will want to run this when on Linux:
 
 export PATH=$PATH:~/dotnet && export DOTNET_ROOT=~/dotnet && ./Godot_v4.5.1-stable_mono_linux.x86_64
+
+-----------------------------------------------
+
+Pretty useful to know:
+https://gamefromscratch.com/c-development-with-godot-and-visual-studio-code-tutorial/

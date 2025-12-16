@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 public class MapGenerator
@@ -60,8 +61,13 @@ public class MapGenerator
         PlaceInitialRoom();
 
         // Choose where the next room goes
-
-        // TODO!
+        int attempts = 0;
+        while(CalcFilled() < fill && attempts < maxAttempts)
+        {
+            Dictionary<string, Tile> nextRoomInfo = rg.ChooseValidDoorTile(map);
+            rg.BuildRoom(map, nextRoomInfo["door"], nextRoomInfo["target"]);
+            attempts++;
+        }
     }
 
     // Private Functions
