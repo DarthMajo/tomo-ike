@@ -26,4 +26,9 @@ public class Tile
 
     // Constructors
     public Tile() {}
+
+    public Tile(TomoIke.TileType tileType)
+    {
+        Value = tileType;
+    }
 }

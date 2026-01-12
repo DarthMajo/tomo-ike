@@ -66,6 +66,8 @@ public class MapGenerator
         {
             Dictionary<string, Tile> nextRoomInfo = rg.ChooseValidDoorTile(map);
             rg.BuildRoom(map, nextRoomInfo["door"], nextRoomInfo["target"]);
+            // TODO: REMOVE THIS LINE BELOW SOME TIME
+            // Console.WriteLine(map.ToString());
             attempts++;
         }
     }
@@ -87,6 +89,8 @@ public class MapGenerator
         int roomSizeY = rand.Next(rg.MinimumRoomSize, rg.MaximumRoomSize);
         int roomPosX = mapSizeX / 2 - roomSizeX / 2;
         int roomPosY = mapSizeY / 2 - roomSizeY / 2;
+        // TODO: REMOVE THIS LINE BELOW SOME TIME
+        // Console.WriteLine("Initial room: Size " + roomSizeX.ToString() + "x" + roomSizeY.ToString() + " at location " + roomPosX.ToString() + "x" + roomPosY.ToString());
         rg.BuildInitalRoom(
             posX: roomPosX,
             posY: roomPosY,

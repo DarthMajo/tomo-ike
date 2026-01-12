@@ -6,10 +6,9 @@ public partial class GodotMapScript : Node2D
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
     {
-        MapGenerator mg = new MapGenerator(25, 25, 0.75);
+        MapGenerator mg = new MapGenerator(40, 22, 0.75);
 		mg.Generate(42);
 		Map m = mg.GeneratedMap;
-		// Console.WriteLine(mg.GeneratedMap.ToString());
 
 		TileMapLayer tm = (TileMapLayer)GetNode("/root/Level/Map/TileMapLayer");
 		buildTilemap(m, tm);

@@ -89,12 +89,13 @@ public class RoomGenerator
         // If we are out of options, reduce the size of the room in non-depth direction
         List<int> originalEntrances;
         if(direction == Direction.North || direction == Direction.South)
-            originalEntrances = Enumerable.Range(1, roomSizeX - 1).ToList();
+            originalEntrances = Enumerable.Range(1, roomSizeX - 2).ToList();
         else
-            originalEntrances = Enumerable.Range(1, roomSizeY - 1).ToList();
+            originalEntrances = Enumerable.Range(1, roomSizeY - 2).ToList();
         
         List<int> entrances = new List<int>(originalEntrances);
-        Console.WriteLine(originalEntrances);
+        // TODO: REMOVE THIS LINE BELOW SOME TIME
+        // Console.WriteLine(originalEntrances);
         bool roomLayoutNotChosen = true;
         while(roomLayoutNotChosen && entrances.Count > 0)
         {
@@ -108,7 +109,7 @@ public class RoomGenerator
             {
                 case Direction.North:
                     posX = target.LocationX - entrance;
-                    posY = door.LocationY - roomSizeY - 1;
+                    posY = door.LocationY - roomSizeY + 1;
                     break;
                 case Direction.South:
                     posX = target.LocationX - entrance;
@@ -119,7 +120,7 @@ public class RoomGenerator
                     posY = target.LocationY - entrance;
                     break;
                 default:
-                    posX = door.LocationX - roomSizeX - 1;
+                    posX = door.LocationX - roomSizeX + 1;
                     posY = target.LocationY - entrance;
                     break;
             }
@@ -130,6 +131,8 @@ public class RoomGenerator
                 roomLayoutNotChosen = false;
 
                 // Place the walls and floor of the room
+                // TODO: REMOVE THIS LINE BELOW SOME TIME
+                // Console.WriteLine("Building room at " + posX.ToString() + "x" + posY.ToString() + " of size " + roomSizeX.ToString() + "x" + roomSizeY.ToString());
                 for(int x = posX; x < posX + roomSizeX; x++)
                 {
                     for(int y = posY; y < posY + roomSizeY; y++)
@@ -232,7 +235,8 @@ public class RoomGenerator
     // Private Functions
     private int CalcDepth(Map m, Tile door, TomoIke.Direction direction)
     {
-        for(int i = 1; i < MaximumRoomSize; i++)
+        int maxDepth = 1;
+        for(int i = maxDepth; i <= MaximumRoomSize; i++)
         {
             (int, int) displacer = GetDisplacer(i, direction);
             if(
@@ -241,9 +245,9 @@ public class RoomGenerator
                     door.LocationY + displacer.Item2
                 ).Value != 0
             )
-                return i + 1;
+                return i;
         }
-        return maximumRoomSize;
+        return MaximumRoomSize;
 
         (int, int) GetDisplacer(int i, TomoIke.Direction dir)
         {
@@ -271,9 +275,9 @@ public class RoomGenerator
         else if(xDiff < 0)
             return TomoIke.Direction.East;
         else if(yDiff > 0)
-            return TomoIke.Direction.South;
-        else if(yDiff < 0)
             return TomoIke.Direction.North;
+        else if(yDiff < 0)
+            return TomoIke.Direction.South;
         else
             throw new Exception("The door and the target cannot be in the same location.");
     }

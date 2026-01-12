@@ -10,6 +10,7 @@ namespace TomoIke
 
     public enum TileType
     {
+        INVALID = -1,
         BLANK = 0,
         DOOR = 68,
         FLOOR = 46,
