@@ -4,3 +4,7 @@
 
 # VSCode
 .vscode/
+
+# Project specifics (unit tests)
+tomo-ike-tests/bin/
+tomo-ike-tests/obj/
