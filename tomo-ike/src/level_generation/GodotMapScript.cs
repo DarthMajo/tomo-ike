@@ -1,5 +1,5 @@
 using Godot;
-using System;
+using TomoIke;
 
 public partial class GodotMapScript : Node2D
 {
