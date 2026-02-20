@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace TomoIke
@@ -35,6 +36,12 @@ namespace TomoIke
 		// Constructors
 		public Map(int size_x, int size_y)
 		{
+			// Check if the map size is valid
+			if(size_x < 3)
+				throw new ArgumentException("Map size X cannot be less than 3");
+			if(size_y < 3)
+				throw new ArgumentException("Map size Y cannot be less than 3");
+
 			mapSizeX = size_x;
 			mapSizeY = size_y;
 			map = InitMap();

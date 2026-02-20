@@ -38,7 +38,7 @@ namespace TomoIke
             fill = 0.75;
             maxAttempts = 10000; // TODO: Have this as a config var
             map = new Map(mapSizeX, mapSizeY);
-            rg = new RoomGenerator(3, 10); // TODO: Fix the hard coded vars
+            rg = new RoomGenerator(map, 3, 10); // TODO: Fix the hard coded vars
         }
 
         public MapGenerator(int sizeX, int sizeY, double fillPercent)
@@ -48,7 +48,7 @@ namespace TomoIke
             fill = fillPercent;
             maxAttempts = 10000; // TODO: Have this as a config var
             map = new Map(mapSizeX, mapSizeY);
-            rg = new RoomGenerator(3, 10); // TODO: Fix the hard coded vars
+            rg = new RoomGenerator(map, 3, 10); // TODO: Fix the hard coded vars
         }
 
         // Public Functions
@@ -67,8 +67,6 @@ namespace TomoIke
             {
                 Dictionary<string, Tile> nextRoomInfo = rg.ChooseValidDoorTile(map);
                 rg.BuildRoom(map, nextRoomInfo["door"], nextRoomInfo["target"]);
-                // TODO: REMOVE THIS LINE BELOW SOME TIME
-                // Console.WriteLine(map.ToString());
                 attempts++;
             }
         }
@@ -79,28 +77,14 @@ namespace TomoIke
             int usedTiles = 0;
             for(int x = 0; x < map.MapSizeX; x++)
                 for(int y = 0; y < map.MapSizeY; y++)
-                    if(map.GetTile(x, y).Value != TomoIke.TileType.BLANK)
+                    if(map.GetTile(x, y).Value != TileType.BLANK)
                         usedTiles++;
             return (double)usedTiles / map.Area;
         }
 
         private void PlaceInitialRoom()
         {
-            int roomSizeX = rand.Next(rg.MinimumRoomSize, rg.MaximumRoomSize);
-            int roomSizeY = rand.Next(rg.MinimumRoomSize, rg.MaximumRoomSize);
-            int roomPosX = mapSizeX / 2 - roomSizeX / 2;
-            int roomPosY = mapSizeY / 2 - roomSizeY / 2;
-            // TODO: REMOVE THIS LINE BELOW SOME TIME
-            // Console.WriteLine("Initial room: Size " + roomSizeX.ToString() + "x" + roomSizeY.ToString() + " at location " + roomPosX.ToString() + "x" + roomPosY.ToString());
-            rg.BuildInitalRoom(
-                posX: roomPosX,
-                posY: roomPosY,
-                sizeX: roomSizeX,
-                sizeY: roomSizeY,
-                m: map,
-                doorX:-1,
-                doorY:-1
-            );
+            rg.BuildInitalRoom();
         }
     }
 }

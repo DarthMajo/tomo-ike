@@ -1,12 +1,15 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace TomoIke
 {
     public class RoomGenerator
     {
         // Variables
+        private Map map;
         private int maximumRoomSize;
         private int minimumRoomSize;
         private Random rand;
@@ -31,39 +34,28 @@ namespace TomoIke
         }
 
         // Constructor
-        public RoomGenerator(int minSize, int maxSize)
+        public RoomGenerator(Map m, int minSize, int maxSize)
         {
             if(minSize < 3 || maxSize < 3)
                 throw new ArgumentException("Room size cannot be smaller than 3!");
             if(maxSize < minSize)
                 throw new ArgumentException("The maximum room size cannot be smaller than the minimum!");
 
+            map = m;
             minimumRoomSize = minSize;
             maximumRoomSize = maxSize;
         }
 
         // Public Functions
-        public void BuildInitalRoom(
-            Map m,
-            int posX, int posY,
-            int sizeX, int sizeY,
-            int doorX, int doorY
-        )
+        public void BuildInitalRoom()
         {
-            // Builds a room of size x and y on the map
-            // Nothing smart about it, just plops it in there
-            for(int x = posX; x < posX + sizeX; x++)
-            {
-                for(int y = posY; y < posY + sizeY; y++)
-                {
-                    if(x == doorX && y == doorY)
-                        m.SetTile(x, y, TomoIke.TileType.DOOR);
-                    else if(ShouldBeWallTile(posX, posY, sizeX, sizeY, x, y))
-                        m.SetTile(x, y, TomoIke.TileType.WALL);
-                    else
-                        m.SetTile(x, y, TomoIke.TileType.FLOOR);
-                }
-            }
+            int roomSizeX = rand.Next(MinimumRoomSize, MaximumRoomSize);
+            int roomSizeY = rand.Next(MinimumRoomSize, MaximumRoomSize);
+            int roomPosX = map.MapSizeX / 2 - roomSizeX / 2;
+            int roomPosY = map.MapSizeY / 2 - roomSizeY / 2;
+
+            // Build the intial a room of size x and y on center of the map
+            PlaceRoomTiles(roomPosX, roomPosY, roomSizeX, roomSizeY, -1, -1);
         }
 
         public void BuildRoom(Map m, Tile door, Tile target)
@@ -72,13 +64,17 @@ namespace TomoIke
             Direction direction = FindDepthDirection(door, target);
             int maxDepth = CalcDepth(m, door, direction);
 
-            // Calculate initial room sizes
+            // Calculate initial room size limits
             int roomSizeXLimit = direction == Direction.North || direction == Direction.South ? maximumRoomSize : maxDepth;
             int roomSizeYLimit = direction == Direction.East || direction == Direction.West ? maximumRoomSize : maxDepth;
+
+            // Check if the room size limits are possible; abort if the limit is smaller than the min
             if(roomSizeXLimit <= minimumRoomSize)
                 return;
             if(roomSizeYLimit <= minimumRoomSize)
                 return;
+
+            // Calculate initial room sizes
             int roomSizeX = rand.Next(minimumRoomSize, roomSizeXLimit);
             int roomSizeY = rand.Next(minimumRoomSize, roomSizeYLimit);
 
@@ -93,8 +89,6 @@ namespace TomoIke
                 originalEntrances = Enumerable.Range(1, roomSizeY - 2).ToList();
             
             List<int> entrances = new List<int>(originalEntrances);
-            // TODO: REMOVE THIS LINE BELOW SOME TIME
-            // Console.WriteLine(originalEntrances);
             bool roomLayoutNotChosen = true;
             while(roomLayoutNotChosen && entrances.Count > 0)
             {
@@ -128,23 +122,7 @@ namespace TomoIke
                 if(IsEmptyPlot(m, posX, posY, roomSizeX, roomSizeY))
                 {
                     roomLayoutNotChosen = false;
-
-                    // Place the walls and floor of the room
-                    // TODO: REMOVE THIS LINE BELOW SOME TIME
-                    // Console.WriteLine("Building room at " + posX.ToString() + "x" + posY.ToString() + " of size " + roomSizeX.ToString() + "x" + roomSizeY.ToString());
-                    for(int x = posX; x < posX + roomSizeX; x++)
-                    {
-                        for(int y = posY; y < posY + roomSizeY; y++)
-                        {
-                            if(ShouldBeWallTile(posX, posY, roomSizeX, roomSizeY, x, y))
-                                m.SetTile(x, y, TileType.WALL);
-                            else
-                                m.SetTile(x, y, TileType.FLOOR);
-                        }
-                    }
-
-                    // Finally, plop the door
-                    m.SetTile(door.LocationX, door.LocationY, TileType.DOOR);
+                    PlaceRoomTiles(posX, posY, roomSizeX, roomSizeY, door.LocationX, door.LocationY);
                 }
 
                 // If this entrance failed, remove and try again
@@ -232,7 +210,7 @@ namespace TomoIke
         }
 
         // Private Functions
-        private int CalcDepth(Map m, Tile door, TomoIke.Direction direction)
+        private int CalcDepth(Map m, Tile door, Direction direction)
         {
             int maxDepth = 1;
             for(int i = maxDepth; i <= MaximumRoomSize; i++)
@@ -248,35 +226,35 @@ namespace TomoIke
             }
             return MaximumRoomSize;
 
-            (int, int) GetDisplacer(int i, TomoIke.Direction dir)
+            (int, int) GetDisplacer(int i, Direction dir)
             {
                 switch(dir)
                 {
-                    case TomoIke.Direction.North:
+                    case Direction.North:
                         return (0, -i);
-                    case TomoIke.Direction.East:
+                    case Direction.East:
                         return (i, 0);
-                    case TomoIke.Direction.South:
+                    case Direction.South:
                         return (0, i);
-                    case TomoIke.Direction.West:
+                    case Direction.West:
                         return (-i, 0);
                 }
                 return (0, 0);
             }
         }
 
-        private TomoIke.Direction FindDepthDirection(Tile door, Tile target)
+        private Direction FindDepthDirection(Tile door, Tile target)
         {
             int xDiff = door.LocationX - target.LocationX;
             int yDiff = door.LocationY - target.LocationY;
             if(xDiff > 0)
-                return TomoIke.Direction.West;
+                return Direction.West;
             else if(xDiff < 0)
-                return TomoIke.Direction.East;
+                return Direction.East;
             else if(yDiff > 0)
-                return TomoIke.Direction.North;
+                return Direction.North;
             else if(yDiff < 0)
-                return TomoIke.Direction.South;
+                return Direction.South;
             else
                 throw new Exception("The door and the target cannot be in the same location.");
         }
@@ -296,6 +274,24 @@ namespace TomoIke
                     if(m.GetTile(x, y).Value != 0)
                         return false;
             return true;
+        }
+
+        private void PlaceRoomTiles(int posX, int posY, int sizeX, int sizeY, int doorX, int doorY)
+        {
+            for(int x = posX; x < posX + sizeX; x++)
+            {
+                for(int y = posY; y < posY + sizeY; y++)
+                {
+                    if(ShouldBeWallTile(posX, posY, sizeX, sizeY, x, y))
+                        map.SetTile(x, y, TileType.WALL);
+                    else
+                        map.SetTile(x, y, TileType.FLOOR);
+                }
+            }
+
+            // Finally, plop the door
+            if(doorX >= 0 && doorY >= 0)
+                map.SetTile(doorX, doorY, TileType.DOOR);
         }
 
         private bool ShouldBeWallTile(
