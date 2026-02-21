@@ -8,6 +8,13 @@ namespace TomoIke
         West = 3
     }
 
+    public enum RoomType
+    {
+        DEFAULT = 0,
+        SPAWN = 1,
+        END = 2
+    }
+
     public enum TileType
     {
         INVALID = -1,

@@ -37,10 +37,10 @@ namespace TomoIke
 		public Map(int size_x, int size_y)
 		{
 			// Check if the map size is valid
-			if(size_x < 3)
-				throw new ArgumentException("Map size X cannot be less than 3");
-			if(size_y < 3)
-				throw new ArgumentException("Map size Y cannot be less than 3");
+			if(size_x < GlobalConstants.MINIMUMMAPSIZE)
+				throw new ArgumentException("Tried making the map less than the minimum map size");
+			if(size_y < GlobalConstants.MINIMUMMAPSIZE)
+				throw new ArgumentException("Tried making the map less than the minimum map size");
 
 			mapSizeX = size_x;
 			mapSizeY = size_y;
@@ -48,7 +48,7 @@ namespace TomoIke
 		}
 
 		// Public Functions
-		public List<Tile> GetAllTilesOfValue(TomoIke.TileType val)
+		public List<Tile> GetAllTilesOfValue(TileType val)
 		{
 			List<Tile> allValTiles = new List<Tile>();
 			for(int x = 0; x < MapSizeX; x++)
@@ -61,7 +61,7 @@ namespace TomoIke
 		public Tile GetTile(int x, int y)
 		{
 			if(!IsTileInBounds(x, y))
-				return new Tile(TomoIke.TileType.INVALID);
+				return new Tile(TileType.INVALID);
 			return map[y, x];
 		}
 
@@ -84,7 +84,7 @@ namespace TomoIke
 			return true;
 		}
 
-		public void SetTile(int x, int y, TomoIke.TileType newVal)
+		public void SetTile(int x, int y, TileType newVal)
 		{
 			Tile targetTile = GetTile(x, y);
 			targetTile.Value = newVal;

@@ -5,7 +5,7 @@ namespace TomoIke
         // Variables
         private int locX;
         private int locY;
-        private TomoIke.TileType val;
+        private TileType val;
 
         // Properties
         public int LocationX
@@ -20,7 +20,7 @@ namespace TomoIke
             set { locY = value; }
         }
 
-        public TomoIke.TileType Value
+        public TileType Value
         {
             get { return val; }
             set { val = value;}
@@ -29,7 +29,7 @@ namespace TomoIke
         // Constructors
         public Tile() {}
 
-        public Tile(TomoIke.TileType tileType)
+        public Tile(TileType tileType)
         {
             Value = tileType;
         }

@@ -2,7 +2,7 @@ using TomoIke;
 
 namespace tomo_ike_tests;
 
-public class TestRoomGenerator()
+public class TestRoomGenerator
 {
     [Fact]
     public void TestRoomSizeConstraints()
