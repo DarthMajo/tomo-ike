@@ -36,8 +36,8 @@ namespace TomoIke
         // Constructor
         public RoomGenerator(Map m, int minSize, int maxSize)
         {
-            if(minSize < 3 || maxSize < 3)
-                throw new ArgumentException("Room size cannot be smaller than 3!");
+            if(minSize < GlobalConstants.MINIMUMROOMSIZE || maxSize < GlobalConstants.MINIMUMROOMSIZE)
+                throw new ArgumentException("Room size cannot be smaller than the minimum room size!");
             if(maxSize < minSize)
                 throw new ArgumentException("The maximum room size cannot be smaller than the minimum!");
 
