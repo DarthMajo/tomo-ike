@@ -71,5 +71,25 @@ namespace TomoIke
             SizeY = sy;
             Type = t;
         }
+
+        public bool ExistsOnTile(Tile t)
+        {
+            if(t.LocationX >= PositionX &&
+                t.LocationX < PositionX + SizeX &&
+                t.LocationY >= PositionY &&
+                t.LocationY < PositionY + SizeY)
+                return true;
+            return false;
+        }
+
+        public bool InteriorExistsOnTile(Tile t)
+        {
+            if(t.LocationX >= PositionX + 1 &&
+                t.LocationX < PositionX + SizeX - 1 &&
+                t.LocationY >= PositionY + 1 &&
+                t.LocationY < PositionY + SizeY - 1)
+                return true;
+            return false;
+        }
     }
 }

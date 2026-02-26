@@ -47,7 +47,7 @@ namespace TomoIke
         }
 
         // Public Functions
-        public void BuildInitalRoom()
+        public Room BuildInitalRoom()
         {
             int roomSizeX = rand.Next(MinimumRoomSize, MaximumRoomSize);
             int roomSizeY = rand.Next(MinimumRoomSize, MaximumRoomSize);
@@ -55,10 +55,12 @@ namespace TomoIke
             int roomPosY = map.MapSizeY / 2 - roomSizeY / 2;
 
             // Build the intial a room of size x and y on center of the map
+            Room spawnRoom = new Room(roomPosX, roomPosY, roomSizeX, roomSizeY, RoomType.SPAWN);
             PlaceRoomTiles(roomPosX, roomPosY, roomSizeX, roomSizeY, -1, -1);
+            return spawnRoom;
         }
 
-        public void BuildRoom(Map m, Tile door, Tile target)
+        public Room BuildRoom(Map m, Tile door, Tile target)
         {
             // Find from the door the depth the room can be
             Direction direction = FindDepthDirection(door, target);
@@ -70,9 +72,9 @@ namespace TomoIke
 
             // Check if the room size limits are possible; abort if the limit is smaller than the min
             if(roomSizeXLimit <= minimumRoomSize)
-                return;
+                return null;
             if(roomSizeYLimit <= minimumRoomSize)
-                return;
+                return null;
 
             // Calculate initial room sizes
             int roomSizeX = rand.Next(minimumRoomSize, roomSizeXLimit);
@@ -89,8 +91,7 @@ namespace TomoIke
                 originalEntrances = Enumerable.Range(1, roomSizeY - 2).ToList();
             
             List<int> entrances = new List<int>(originalEntrances);
-            bool roomLayoutNotChosen = true;
-            while(roomLayoutNotChosen && entrances.Count > 0)
+            while(entrances.Count > 0)
             {
                 // Choose a random entrance
                 int entrance = entrances[rand.Next(0, entrances.Count - 1)];
@@ -121,8 +122,9 @@ namespace TomoIke
                 // If we get in here, the room is placable!
                 if(IsEmptyPlot(m, posX, posY, roomSizeX, roomSizeY))
                 {
-                    roomLayoutNotChosen = false;
+                    Room newRoom = new Room(posX, posY, roomSizeX, roomSizeY);
                     PlaceRoomTiles(posX, posY, roomSizeX, roomSizeY, door.LocationX, door.LocationY);
+                    return newRoom;
                 }
 
                 // If this entrance failed, remove and try again
@@ -149,6 +151,7 @@ namespace TomoIke
                     entrances = new List<int>(originalEntrances);
                 }
             }
+            return null;
         }
 
         public Dictionary<string, Tile> ChooseValidDoorTile(Map m)
@@ -157,7 +160,8 @@ namespace TomoIke
             Dictionary<string, Tile> doorTileInfo = new Dictionary<string, Tile>
             {
                 { "door", null },
-                { "target", null }
+                { "target", null },
+                { "previous", null }
             };
 
             // Get all wall tiles as a list
@@ -172,15 +176,28 @@ namespace TomoIke
 
                 // First, find where the floor tile is
                 Tile target;
+                Tile previous;
 
                 if(m.GetTile(wall.LocationX - 1, wall.LocationY).Value == TileType.FLOOR)
+                {
                     target = m.GetTile(wall.LocationX + 1, wall.LocationY);
+                    previous = m.GetTile(wall.LocationX - 1, wall.LocationY);
+                }
                 else if(m.GetTile(wall.LocationX + 1, wall.LocationY).Value == TileType.FLOOR)
+                {
                     target = m.GetTile(wall.LocationX - 1, wall.LocationY);
+                    previous = m.GetTile(wall.LocationX + 1, wall.LocationY);
+                }
                 else if(m.GetTile(wall.LocationX, wall.LocationY - 1).Value == TileType.FLOOR)
+                {
                     target = m.GetTile(wall.LocationX, wall.LocationY + 1);
+                    previous = m.GetTile(wall.LocationX, wall.LocationY - 1);
+                }
                 else if(m.GetTile(wall.LocationX, wall.LocationY + 1).Value == TileType.FLOOR)
+                {
                     target = m.GetTile(wall.LocationX, wall.LocationY - 1);
+                    previous = m.GetTile(wall.LocationX, wall.LocationY + 1);
+                }
                 else
                 {
                     wallTiles.Remove(wall);
@@ -204,6 +221,7 @@ namespace TomoIke
                 // If we made it here, this should(TM) be a valid door tile!
                 doorTileInfo["door"] = wall;
                 doorTileInfo["target"] = target;
+                doorTileInfo["previous"] = previous;
                 break;
             }
             return doorTileInfo;
@@ -243,7 +261,7 @@ namespace TomoIke
             }
         }
 
-        private Direction FindDepthDirection(Tile door, Tile target)
+        public Direction FindDepthDirection(Tile door, Tile target)
         {
             int xDiff = door.LocationX - target.LocationX;
             int yDiff = door.LocationY - target.LocationY;

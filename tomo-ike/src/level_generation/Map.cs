@@ -9,6 +9,7 @@ namespace TomoIke
 		private Tile[,] map;
 		private int mapSizeX;
 		private int mapSizeY;
+		private Rooms rooms;
 
 		// Properties
 		public int Area
@@ -33,6 +34,11 @@ namespace TomoIke
 			set { mapSizeY = value; }
 		}
 
+		public Rooms RoomCollection
+		{
+			get { return rooms; }
+		}
+
 		// Constructors
 		public Map(int size_x, int size_y)
 		{
@@ -44,6 +50,7 @@ namespace TomoIke
 
 			mapSizeX = size_x;
 			mapSizeY = size_y;
+			rooms = new Rooms();
 			map = InitMap();
 		}
 
