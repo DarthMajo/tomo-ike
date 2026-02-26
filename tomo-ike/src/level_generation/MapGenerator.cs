@@ -66,7 +66,23 @@ namespace TomoIke
             while(CalcFilled() < fill && attempts < maxAttempts)
             {
                 Dictionary<string, Tile> nextRoomInfo = rg.ChooseValidDoorTile(map);
-                rg.BuildRoom(map, nextRoomInfo["door"], nextRoomInfo["target"]);
+                Room newRoom = rg.BuildRoom(map, nextRoomInfo["door"], nextRoomInfo["target"]);
+                if(newRoom != null)
+                {
+                    // Add the room
+                    map.RoomCollection.AddRoom(newRoom);
+
+                    // Calculate which room is the parent room by taking the room opposite of the target
+                    foreach(RoomNode rn in map.RoomCollection.RoomList)
+                    {
+                        if(rn.RoomObject.InteriorExistsOnTile(nextRoomInfo["previous"]))
+                        {
+                            // Connect the child's room to the parent's room and vice versa
+                            map.RoomCollection.ConnectRooms(rn.RoomObject, newRoom);
+                            break;
+                        }
+                    }
+                }
                 attempts++;
             }
         }
@@ -84,7 +100,8 @@ namespace TomoIke
 
         private void PlaceInitialRoom()
         {
-            rg.BuildInitalRoom();
+            // Places the initial room and adds it to the room collection.
+            map.RoomCollection.AddRoom(rg.BuildInitalRoom());
         }
     }
 }
