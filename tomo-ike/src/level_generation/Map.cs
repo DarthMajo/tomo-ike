@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Godot;
 
 namespace TomoIke
 {
@@ -9,6 +10,8 @@ namespace TomoIke
 		private Tile[,] map;
 		private int mapSizeX;
 		private int mapSizeY;
+		private int playerSpawnX;
+		private int playerSpawnY;
 		private Rooms rooms;
 
 		// Properties
@@ -34,6 +37,28 @@ namespace TomoIke
 			set { mapSizeY = value; }
 		}
 
+		public int PlayerSpawnX
+		{
+			get { return playerSpawnX; }
+			set { playerSpawnX = value; }
+		}
+
+		public int PlayerSpawnY
+		{
+			get { return playerSpawnY; }
+			set { playerSpawnY = value; }
+		}
+
+		public Godot.Vector2 PlayerSpawnVector
+		{
+			get { return new Godot.Vector2(playerSpawnX, playerSpawnY); }
+			set
+			{
+				playerSpawnX = (int)value.X;
+				playerSpawnY = (int)value.Y;
+			}
+		}
+
 		public Rooms RoomCollection
 		{
 			get { return rooms; }
@@ -50,6 +75,8 @@ namespace TomoIke
 
 			mapSizeX = size_x;
 			mapSizeY = size_y;
+			playerSpawnX = 0;
+			playerSpawnY = 0;
 			rooms = new Rooms();
 			map = InitMap();
 		}

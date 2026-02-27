@@ -1,9 +1,10 @@
-[gd_scene load_steps=9 format=3 uid="uid://6qpp5t0y7jl3"]
+[gd_scene load_steps=10 format=3 uid="uid://6qpp5t0y7jl3"]
 
 [ext_resource type="Script" uid="uid://cld5mepg2ebvy" path="res://src/level_generation/GodotMapScript.cs" id="1_u52ul"]
 [ext_resource type="Texture2D" uid="uid://b0ofxe0r2ea4y" path="res://textures/map/floor.png" id="2_0b4ue"]
 [ext_resource type="Texture2D" uid="uid://b75pe6oe1cmk6" path="res://textures/map/door.png" id="3_f2txt"]
 [ext_resource type="Texture2D" uid="uid://bag6hvylcew4f" path="res://textures/map/wall.png" id="4_1ainy"]
+[ext_resource type="Script" uid="uid://dm377rko6md63" path="res://src/map/MapMovement.cs" id="5_n6hdu"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_n6hdu"]
 resource_name = "Floor"
@@ -36,3 +37,4 @@ script = ExtResource("1_u52ul")
 
 [node name="TileMapLayer" type="TileMapLayer" parent="Map"]
 tile_set = SubResource("TileSet_8cye3")
+script = ExtResource("5_n6hdu")
