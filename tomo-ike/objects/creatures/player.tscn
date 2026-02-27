@@ -1,7 +1,9 @@
-[gd_scene load_steps=2 format=3 uid="uid://cjs3sqa5evla5"]
+[gd_scene load_steps=3 format=3 uid="uid://cjs3sqa5evla5"]
 
 [ext_resource type="Texture2D" uid="uid://jjiip2fxyq4a" path="res://textures/creatures/player.png" id="1_riafi"]
+[ext_resource type="Script" uid="uid://cc8eo0y37y1cx" path="res://src/creatures/Player.cs" id="2_2qutk"]
 
 [node name="Node2D" type="Sprite2D"]
 texture = ExtResource("1_riafi")
 centered = false
+script = ExtResource("2_2qutk")

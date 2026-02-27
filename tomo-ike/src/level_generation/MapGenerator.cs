@@ -101,7 +101,12 @@ namespace TomoIke
         private void PlaceInitialRoom()
         {
             // Places the initial room and adds it to the room collection.
-            map.RoomCollection.AddRoom(rg.BuildInitalRoom());
+            Room spawnRoom = rg.BuildInitalRoom();
+            map.RoomCollection.AddRoom(spawnRoom);
+
+            // For now we will put the player spawn in the center of the spawn room
+            map.PlayerSpawnX = (spawnRoom.PositionX + (spawnRoom.SizeX / 2)) * GlobalConstants.TILESIZE;
+            map.PlayerSpawnY = (spawnRoom.PositionY + (spawnRoom.SizeY / 2)) * GlobalConstants.TILESIZE;
         }
     }
 }

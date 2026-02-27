@@ -6,12 +6,20 @@ public partial class GodotMapScript : Node2D
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
     {
+		// First, we will generate the map
         MapGenerator mg = new MapGenerator(40, 22, 0.75);
 		mg.Generate(42);
 		Map m = mg.GeneratedMap;
 
+		// Set the map tiles to the tilemap
 		TileMapLayer tm = (TileMapLayer)GetNode("/root/Level/Map/TileMapLayer");
 		buildTilemap(m, tm);
+
+		// Spawn player
+		PackedScene playerScene = GD.Load<PackedScene>("res://objects/creatures/player.tscn");
+		Node2D player = playerScene.Instantiate<Node2D>();
+		player.Position = m.PlayerSpawnVector;
+		AddChild(player);
     }
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
