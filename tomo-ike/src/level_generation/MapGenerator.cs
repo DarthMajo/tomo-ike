@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Godot;
 
 namespace TomoIke
 {
@@ -105,8 +106,8 @@ namespace TomoIke
             map.RoomCollection.AddRoom(spawnRoom);
 
             // For now we will put the player spawn in the center of the spawn room
-            map.PlayerSpawnX = (spawnRoom.PositionX + (spawnRoom.SizeX / 2)) * GlobalConstants.TILESIZE;
-            map.PlayerSpawnY = (spawnRoom.PositionY + (spawnRoom.SizeY / 2)) * GlobalConstants.TILESIZE;
+            map.PlayerSpawnX = spawnRoom.PositionX + spawnRoom.SizeX / 2;
+            map.PlayerSpawnY = spawnRoom.PositionY + spawnRoom.SizeY / 2;
         }
     }
 }
