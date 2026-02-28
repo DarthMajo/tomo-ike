@@ -18,14 +18,15 @@ public partial class Player : CharacterBody2D
         Godot.Vector2 movementDirection = new Godot.Vector2(0, 0);
 
         if(Input.IsActionPressed("walk_north"))
-            movementDirection += new Godot.Vector2(0, -speed * (float)delta);
+            movementDirection += new Godot.Vector2(0, -speed);
         if(Input.IsActionPressed("walk_south"))
-            movementDirection += new Godot.Vector2(0, speed * (float)delta);
+            movementDirection += new Godot.Vector2(0, speed);
         if(Input.IsActionPressed("walk_east"))
-            movementDirection += new Godot.Vector2(speed * (float)delta, 0);
+            movementDirection += new Godot.Vector2(speed, 0);
         if(Input.IsActionPressed("walk_west"))
-            movementDirection += new Godot.Vector2(-speed * (float)delta, 0);
+            movementDirection += new Godot.Vector2(-speed, 0);
 
-        MoveAndCollide(movementDirection);
+        Velocity = movementDirection;
+        MoveAndSlide();
     }
 }
