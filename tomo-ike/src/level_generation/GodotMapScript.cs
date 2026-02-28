@@ -14,14 +14,11 @@ public partial class GodotMapScript : Node2D
 		// Set the map tiles to the tilemap
 		TileMapLayer tm = (TileMapLayer)GetNode("/root/Level/Map/TileMapLayer");
 		BuildTilemap(m, tm);
-
-		// Set map position to have the player in the center of the map
-		tm.Position = SetTileMapLocation(m);
 		
 		// Spawn player
 		PackedScene playerScene = GD.Load<PackedScene>("res://objects/creatures/player.tscn");
 		Node2D player = playerScene.Instantiate<Node2D>();
-		player.Position = SetPlayerLocation();
+		player.Position = SetPlayerLocation(m);
 		AddChild(player);
     }
 
@@ -43,21 +40,11 @@ public partial class GodotMapScript : Node2D
         }
     }
 
-	private Godot.Vector2 SetTileMapLocation(Map m)
+	private Godot.Vector2 SetPlayerLocation(Map m)
 	{
-		float windowXMidpoint = GetViewport().GetVisibleRect().Size.X / 2;
-		float windowYMidpoint = GetViewport().GetVisibleRect().Size.Y / 2;
-		float x = windowXMidpoint - (m.PlayerSpawnX + 1) * GlobalConstants.TILESIZE + (GlobalConstants.TILESIZE / 2);
-		float y = windowYMidpoint - (m.PlayerSpawnY + 1) * GlobalConstants.TILESIZE + (GlobalConstants.TILESIZE / 2);
-		return new Godot.Vector2(x, y);
-	}
-
-	private Godot.Vector2 SetPlayerLocation()
-	{
-		return new Godot.Vector2(
-			GetViewport().GetVisibleRect().Size.X / 2 - (GlobalConstants.TILESIZE / 2),
-			GetViewport().GetVisibleRect().Size.Y / 2 - (GlobalConstants.TILESIZE / 2)
-		);	
+		float x = m.PlayerSpawnX * GlobalConstants.TILESIZE;
+		float y = m.PlayerSpawnY * GlobalConstants.TILESIZE;
+		return new Godot.Vector2(x,y);	
 	}
 
 }

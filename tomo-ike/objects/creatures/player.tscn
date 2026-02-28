@@ -1,9 +1,20 @@
-[gd_scene load_steps=3 format=3 uid="uid://cjs3sqa5evla5"]
+[gd_scene load_steps=4 format=3 uid="uid://cjs3sqa5evla5"]
 
 [ext_resource type="Texture2D" uid="uid://jjiip2fxyq4a" path="res://textures/creatures/player.png" id="1_riafi"]
 [ext_resource type="Script" uid="uid://cc8eo0y37y1cx" path="res://src/creatures/Player.cs" id="2_2qutk"]
 
-[node name="Node2D" type="Sprite2D"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_2qutk"]
+size = Vector2(16, 30)
+
+[node name="CharacterBody2D" type="CharacterBody2D"]
+script = ExtResource("2_2qutk")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(16, 16)
+shape = SubResource("RectangleShape2D_2qutk")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("1_riafi")
 centered = false
-script = ExtResource("2_2qutk")
+
+[node name="Camera2D" type="Camera2D" parent="."]
