@@ -14,6 +14,12 @@ public partial class GodotMapScript : Node2D
 		// Set the map tiles to the tilemap
 		TileMapLayer tm = (TileMapLayer)GetNode("/root/Level/Map/TileMapLayer");
 		BuildTilemap(m, tm);
+
+		// Spawn goal
+		PackedScene endScene = GD.Load<PackedScene>("res://map/endDoor.tscn");
+		Node2D endDoor = endScene.Instantiate<Node2D>();
+		endDoor.Position = SetAssetPixelLocation(m.GoalPositionX, m.GoalPositionY);
+		AddChild(endDoor);
 		
 		// Spawn player
 		PackedScene playerScene = GD.Load<PackedScene>("res://objects/creatures/player.tscn");
@@ -47,4 +53,10 @@ public partial class GodotMapScript : Node2D
 		return new Godot.Vector2(x,y);	
 	}
 
+	private Godot.Vector2 SetAssetPixelLocation(int tilex, int tiley)
+	{
+		float x = tilex * GlobalConstants.TILESIZE;
+		float y = tiley * GlobalConstants.TILESIZE;
+		return new Godot.Vector2(x,y);	
+	}
 }

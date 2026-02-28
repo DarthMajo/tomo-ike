@@ -86,6 +86,9 @@ namespace TomoIke
                 }
                 attempts++;
             }
+
+            // Setup various other room assets
+            SetUpEndRoom();
         }
 
         // Private Functions
@@ -108,6 +111,43 @@ namespace TomoIke
             // For now we will put the player spawn in the center of the spawn room
             map.PlayerSpawnX = spawnRoom.PositionX + spawnRoom.SizeX / 2;
             map.PlayerSpawnY = spawnRoom.PositionY + spawnRoom.SizeY / 2;
+        }
+
+        private Room ChooseEndRoom()
+        {
+            // Choose a random room that is not the spawn room
+            bool roomNotChosen = true;
+            while(roomNotChosen)
+            {
+                // Choose a random room and make sure it is a blank room
+                int index = rand.Next(map.RoomCollection.Count);
+                if(map.RoomCollection.RoomList[index].RoomObject.Type == RoomType.DEFAULT)
+                {
+                    // If it is a blank room, then we have the end room
+                    roomNotChosen = false;
+                    return map.RoomCollection.RoomList[index].RoomObject;
+                }
+            }
+            return null;
+        }
+
+        private Tile ChooseRoomTile(Room r)
+        {
+            int doorX = r.PositionX + rand.Next(r.SizeX - 2) + 1;
+            int doorY = r.PositionY + rand.Next(r.SizeY - 2) + 1;
+            return map.GetTile(doorX, doorY);
+        }
+
+        private void SetUpEndRoom()
+        {
+            // Retrieve the end room and set it as so
+            Room endRoom = ChooseEndRoom();
+            endRoom.Type = RoomType.END;
+
+            // Choose a random tile to put the door on
+            Tile endTile = ChooseRoomTile(endRoom);
+            map.GoalPositionX = endTile.LocationX;
+            map.GoalPositionY = endTile.LocationY;
         }
     }
 }

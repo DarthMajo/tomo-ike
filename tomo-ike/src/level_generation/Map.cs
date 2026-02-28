@@ -10,6 +10,8 @@ namespace TomoIke
 		private Tile[,] map;
 		private int mapSizeX;
 		private int mapSizeY;
+		private int goalX;
+		private int goalY;
 		private int playerSpawnX;
 		private int playerSpawnY;
 		private Rooms rooms;
@@ -35,6 +37,18 @@ namespace TomoIke
 		{
 			get { return mapSizeY; }
 			set { mapSizeY = value; }
+		}
+
+		public int GoalPositionX
+		{
+			get { return goalX; }
+			set { goalX = value; }
+		}
+
+		public int GoalPositionY
+		{
+			get { return goalY; }
+			set { goalY = value; }
 		}
 
 		public int PlayerSpawnX
@@ -77,6 +91,8 @@ namespace TomoIke
 			mapSizeY = size_y;
 			playerSpawnX = 0;
 			playerSpawnY = 0;
+			goalX = -1;
+			goalY = -1;
 			rooms = new Rooms();
 			map = InitMap();
 		}
